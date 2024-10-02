@@ -5,8 +5,16 @@
   let ipc = window.electron.ipcRenderer
   let window_name = document.title
 
-  let isYesHover, realQuestion, clickedYes
+  let isYesHover, realQuestion, clickedYes, maxClickCount, currentClickCount, byeMsg
   realQuestion = 'Есть ли зверь сильнее мухи?'
+  byeMsg = 'Так я и знал'
+
+  currentClickCount = 0
+  maxClickCount = 0
+  while (maxClickCount < 20) {
+    maxClickCount = Math.floor(Math.random() * 60)
+  }
+  console.log(maxClickCount)
 
   function quit(): void {
     ipc.send('quit')
@@ -31,6 +39,12 @@
   }
 
   function noClick(event): void {
+    if (currentClickCount >= maxClickCount) {
+      byeMsg = 'Ладно, ты победил'
+      yesClick()
+      return
+    }
+    currentClickCount++
     let maxX =
       document.querySelector('.mainwindow').getBoundingClientRect().width -
       event.target.getBoundingClientRect().width
@@ -75,12 +89,12 @@
     </button>
     <button class="filler"></button>
     <!-- eslint-disable-next-line prettier/prettier -->
-    <button class="no" on:mousedown={noClick} style="left: calc(50% + 1rem);"> Нет </button>
+    <button class="no" on:click={noClick} style="left: calc(50% + 1rem);"> Нет </button>
   </div>
 </div>
 
 <div class="bye" class:visible={clickedYes}>
-  <h1>Так я и знал</h1>
+  <h1>{byeMsg}</h1>
 </div>
 
 <style lang="scss">
